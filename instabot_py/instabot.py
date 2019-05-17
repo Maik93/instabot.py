@@ -549,10 +549,13 @@ class InstaBot:
                 return f"instagram.com/p/{shortened_id}/"
 
     def get_username_by_user_id(self, user_id):
+        """ Get username by user_id """
         if self.login_status:
             try:
-                profile = instaloader.Profile.from_id(self.instaload.context, user_id)
-                username = profile.username
+                url_info = self.api_user_detail % user_id
+                r = self.s.get(url_info, headers="")
+                all_data = json.loads(r.text)
+                username = all_data["user"]["username"]
                 return username
             except:
                 logging.exception("Except on get_username_by_user_id")
