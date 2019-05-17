@@ -47,6 +47,6 @@ class PersistenceBase:
         """ Checks if username exists """
         raise NotImplementedError()
 
-    def check_and_insert_user_agent(self, user_agent):
-        """ Check user agent  """
-        raise NotImplementedError()
+    # def check_and_insert_user_agent(self, user_agent):
+    #     """ Check user agent  """
+    #     raise NotImplementedError()

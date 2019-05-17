@@ -30,7 +30,8 @@ class Media(Base):
 
 class Persistence(PersistenceBase):
 
-    def __init__(self, connection_string):
+    def __init__(self, connection_string, bot):
+        self.bot = bot
         self._engine = create_engine(connection_string, echo=False)
         Base.metadata.create_all(self._engine)
 

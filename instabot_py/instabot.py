@@ -60,8 +60,7 @@ class InstaBot:
         conf_db["connection_string"] = f"sqlite:///{login.lower()}.db"
         config.set("database", conf_db, default=True)
 
-        self.persistence = PersistenceManager(config.get('database'))
-        self.persistence.bot = self
+        self.persistence = PersistenceManager(config.get('database'), self)
         self.session_file = config.get("session_file")
 
         self.user_agent = random.sample(config.get("list_of_ua"), 1)[0]
