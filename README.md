@@ -13,6 +13,14 @@
 - Python v3.6 or greater
 - Pip v18 or greater
 
+## Install this fork
+If you want, create a Conda evironment, then activate it.
+
+```sh
+pip install -r requirements/base.txt
+pip install -r requirements/misc-deps.txt
+```
+
 
 ## Quick Start 🚀
 
