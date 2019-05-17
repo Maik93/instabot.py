@@ -11,12 +11,24 @@ class PersistenceBase:
         """ controls if user was already unfollowed before """
         raise NotImplementedError()
 
+    def check_interaction(self, user_id):
+        """ controls if user was already interacted before """
+        raise NotImplementedError()
+
     def insert_media(self, media_id, status):
         """ insert media to medias """
         raise NotImplementedError()
 
     def insert_username(self, user_id, username):
-        """ insert user_id to usernames """
+        """ insert user to followers """
+        raise NotImplementedError()
+
+    def insert_interaction(self, user_id, username):
+        """ insert usere to interactions """
+        raise NotImplementedError()
+
+    def update_interaction(self, user_id):
+        """ update last interaction time for user """
         raise NotImplementedError()
 
     def insert_unfollow_count(self, user_id=False, username=False):

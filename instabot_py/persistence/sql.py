@@ -28,6 +28,15 @@ class Media(Base):
     code = Column(String)
 
 
+class Interaction(Base):
+    __tablename__ = 'interactions'
+    id = Column(String, primary_key=True)
+    username = Column(String)
+    first_interaction = Column(DateTime, default=datetime.now())
+    last_interaction = Column(DateTime, default=datetime.now())
+    # unfollow_count = Column(Integer, default=0)
+
+
 class Persistence(PersistenceBase):
 
     def __init__(self, connection_string, bot):
@@ -57,6 +66,12 @@ class Persistence(PersistenceBase):
                    .filter(Follower.unfollow_count > 0) \
                    .one_or_none() is not None
 
+    def check_interaction(self, user_id):
+        """ controls if user was already interacted before """
+        return self._session.query(Interaction) \
+                   .filter(Interaction.id == user_id) \
+                   .one_or_none() is not None
+
     def insert_media(self, media_id, status):
         """ insert media to medias """
         media = Media(id=media_id, status=status)
@@ -64,14 +79,25 @@ class Persistence(PersistenceBase):
         self._session.commit()
 
     def insert_username(self, user_id, username):
-        """ insert user_id to usernames """
+        """ insert user to followers """
         follower = Follower(id=user_id, username=username)
         self._session.add(follower)
         self._session.commit()
 
+    def insert_interaction(self, user_id, username):
+        """ insert user to interactions """
+        interaction = Interaction(id=user_id, username=username)
+        self._session.add(interaction)
+        self._session.commit()
+
+    def update_interaction(self, user_id):
+        """ update last interaction time for user """
+        interaction = self._session.query(Interaction).filter(Interaction.id == user_id).first()
+        interaction.last_interaction = datetime.now()
+        self._session.commit()
+
     def insert_unfollow_count(self, user_id=None, username=None):
         """ track unfollow count for new futures """
-
         if user_id:
             follower = self._session.query(Follower).filter(Follower.id == user_id).first()
         elif username:
