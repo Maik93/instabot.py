@@ -80,7 +80,7 @@ class InstaBot:
         self.unfollow_whitelist = config.get("unfollow_whitelist")
         self.comment_list = config.get("comment_list")
 
-        self.instaloader = instaloader.Instaloader()
+        # self.instaloader = instaloader.Instaloader()
 
         # Unfollow Criteria & Options
         self.unfollow_recent_feed = self.str2bool(config.get("unfollow_recent_feed"))
@@ -210,7 +210,6 @@ class InstaBot:
         signal.signal(signal.SIGINT, self.cleanup)
         signal.signal(signal.SIGTERM, self.cleanup)
         atexit.register(self.cleanup)
-        self.instaload = instaloader.Instaloader()
 
     def url_user(self, username):
         return self.url_user_detail % username
@@ -830,7 +829,7 @@ class InstaBot:
                 self.new_auto_mod_comments()
                 # Bot iteration in 1 sec
                 time.sleep(1)
-                self.logger.debug("Tic!")
+                # self.logger.debug("Tic!")
             else:
                 self.logger.debug(
                     "Sleeping until {hour}:{min}".format(
