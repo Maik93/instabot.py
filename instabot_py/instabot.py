@@ -56,6 +56,9 @@ class InstaBot:
             raise Exception("Account details are missing")
 
         config.set("session_file", f"{login.lower()}.session", default=True)
+        conf_db = config.get("database")
+        conf_db["connection_string"] = f"sqlite:///{login.lower()}.db"
+        config.set("database", conf_db, default=True)
 
         self.persistence = PersistenceManager(config.get('database'))
         self.persistence.bot = self
