@@ -607,6 +607,7 @@ class InstaBot:
                             ):
                                 self.logger.info("Keep calm - It's already liked ;)")
                                 return False
+                            self.new_interaction(self.media_by_tag[i]["node"]["owner"]["id"], interaction_type='like')
                             try:
                                 if (
                                         len(
@@ -929,6 +930,9 @@ class InstaBot:
 
                 except Exception:
                     pass
+
+            self.new_interaction(self.media_by_tag[0]["node"]["owner"]["id"], interaction_type='follow')
+
             if (
                     self.persistence.check_already_followed(
                         user_id=self.media_by_tag[0]["node"]["owner"]["id"]
@@ -1039,6 +1043,8 @@ class InstaBot:
             log_string = f"Trying to comment: {media_id}\n                 " \
                          f"https://www.{self.get_instagram_url_from_media_id(media_id)}"
             self.logger.info(log_string)
+
+            self.new_interaction(self.media_by_tag[0]["node"]["owner"]["id"], interaction_type='comment')
 
             if (
                     self.comment(self.media_by_tag[0]["node"]["id"], comment_text)
@@ -1464,3 +1470,13 @@ class InstaBot:
     @staticmethod
     def str2bool(value):
         return str(value).lower() in ["yes", "true"]
+
+    def new_interaction(self, user_id, interaction_type=''):
+        """ annotate any interaction with users """
+        username = self.get_username_by_user_id(user_id)
+        if self.persistence.check_interaction(user_id):
+            self.persistence.update_interaction(user_id, interaction_type=interaction_type)
+            self.logger.debug(f">> Interaction ({interaction_type}) whit user {username} updated.")
+        else:
+            self.persistence.insert_interaction(user_id, username, interaction_type=interaction_type)
+            self.logger.debug(f">> Interaction ({interaction_type}) whit user {username} inserted.")

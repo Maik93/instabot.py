@@ -34,6 +34,7 @@ class Interaction(Base):
     username = Column(String)
     first_interaction = Column(DateTime, default=datetime.now())
     last_interaction = Column(DateTime, default=datetime.now())
+    interaction_type = Column(String, default="")
     # unfollow_count = Column(Integer, default=0)
 
 
@@ -84,16 +85,20 @@ class Persistence(PersistenceBase):
         self._session.add(follower)
         self._session.commit()
 
-    def insert_interaction(self, user_id, username):
+    def insert_interaction(self, user_id, username, interaction_type=""):
         """ insert user to interactions """
-        interaction = Interaction(id=user_id, username=username)
+        now = datetime.now()
+        interaction = Interaction(id=user_id, username=username,
+                                  first_interaction=now, last_interaction=now,
+                                  interaction_type=interaction_type)
         self._session.add(interaction)
         self._session.commit()
 
-    def update_interaction(self, user_id):
+    def update_interaction(self, user_id, interaction_type=""):
         """ update last interaction time for user """
         interaction = self._session.query(Interaction).filter(Interaction.id == user_id).first()
         interaction.last_interaction = datetime.now()
+        interaction.interaction_type = interaction_type
         self._session.commit()
 
     def insert_unfollow_count(self, user_id=None, username=None):
