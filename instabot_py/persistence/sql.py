@@ -75,13 +75,13 @@ class Persistence(PersistenceBase):
 
     def insert_media(self, media_id, status):
         """ insert media to medias """
-        media = Media(id=media_id, status=status)
+        media = Media(id=media_id, status=status, created=datetime.now())
         self._session.add(media)
         self._session.commit()
 
     def insert_username(self, user_id, username):
-        """ insert user to followers """
-        follower = Follower(id=user_id, username=username)
+        """ insert user_id to followers """
+        follower = Follower(id=user_id, username=username, created=datetime.now(), last_followed=datetime.now())
         self._session.add(follower)
         self._session.commit()
 
