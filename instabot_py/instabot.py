@@ -80,7 +80,7 @@ class InstaBot:
         self.unfollow_whitelist = config.get("unfollow_whitelist")
         self.comment_list = config.get("comment_list")
 
-        # self.instaloader = instaloader.Instaloader()
+        self.instaloader = instaloader.Instaloader()
 
         # Unfollow Criteria & Options
         self.unfollow_recent_feed = self.str2bool(config.get("unfollow_recent_feed"))
@@ -214,6 +214,7 @@ class InstaBot:
         signal.signal(signal.SIGINT, self.cleanup)
         signal.signal(signal.SIGTERM, self.cleanup)
         atexit.register(self.cleanup)
+        self.instaload = instaloader.Instaloader()
 
     def url_user(self, username):
         return self.url_user_detail % username
@@ -556,13 +557,10 @@ class InstaBot:
                 return f"instagram.com/p/{shortened_id}/"
 
     def get_username_by_user_id(self, user_id):
-        """ Get username by user_id """
         if self.login_status:
             try:
-                url_info = self.api_user_detail % user_id
-                r = self.s.get(url_info, headers="")
-                all_data = json.loads(r.text)
-                username = all_data["user"]["username"]
+                profile = instaloader.Profile.from_id(self.instaload.context, user_id)
+                username = profile.username
                 return username
             except:
                 logging.exception("Except on get_username_by_user_id")
