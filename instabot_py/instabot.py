@@ -677,19 +677,17 @@ class InstaBot:
                                     )
                                     self.logger.info(log_string)
                                 elif like.status_code == 400:
-                                    self.logger.info(
-                                        f"Not liked: {like.status_code} message {like.text}"
-                                    )
-                                    self.persistence.insert_media(
-                                        media_id=self.media_by_tag[i]["node"]["id"],
-                                        status="400",
-                                    )
-                                    # Some error. If repeated - can be ban!
-                                    if self.error_400 >= config.get("error_400_to_ban"):
-                                        # Look like you banned!
+                                    self.logger.info(f"Not liked: {like.status_code} message {like.text}")
+
+                                    self.logger.debug(f"Checking if we're banned...")
+                                    if "block" in like.text:
+                                        self.logger.info("Oh no! We're banned! I'll sleep 24 hours... see you tomorrow!")
                                         time.sleep(config.get("ban_sleep_time"))
                                     else:
-                                        self.error_400 += 1
+                                        self.logger.info("It's media fault, it seems to be unreachable... storing it.")
+                                        self.persistence.insert_media(
+                                            media_id=self.media_by_tag[i]["node"]["id"],
+                                            status="400")
                                 else:
                                     self.persistence.insert_media(
                                         media_id=self.media_by_tag[i]["node"]["id"],

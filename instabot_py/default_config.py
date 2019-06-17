@@ -96,7 +96,7 @@ DEFAULT_CONFIG = {
     # If you have 3 400 error in row - looks like you banned.
     "error_400_to_ban": 3,
     # If InstaBot think you are banned - going to sleep.
-    "ban_sleep_time": 3 * 60 * 60,
+    "ban_sleep_time": 24 * 60 * 60,  # one day
     "list_of_ua": [
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.6.01001)",
         "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; FSL 7.0.7.01001)",
