@@ -5,6 +5,8 @@ import sys
 import instaloader
 from instabot_py.persistence.sql import Persistence
 
+CUT_DATE = [28, 6, 2019]
+
 here = os.path.abspath(os.path.dirname(__file__))
 
 if len(sys.argv) == 1:
@@ -39,7 +41,7 @@ current_followers = [line.rstrip('\n') for line in open(os.path.join(here, "foll
 
 db = Persistence(f'sqlite:///{PROFILE}.db', None)
 
-users_interacted_with = db.get_all_interactions()
+users_interacted_with = db.get_all_interactions(CUT_DATE)
 
 matured_followers = list(set(current_followers).intersection(users_interacted_with))
-print(f"You've done {len(matured_followers)} new followers! It's {len(matured_followers)*.03}€, much wow!")
+print(f"You've done {len(matured_followers)} new followers! It's {len(matured_followers) * .03}€, much wow!")

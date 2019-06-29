@@ -101,9 +101,16 @@ class Persistence(PersistenceBase):
         interaction.interaction_type = interaction_type
         self._session.commit()
 
-    def get_all_interactions(self):
+    def get_all_interactions(self, cut_date=None):
         """ get all usernames that the bot interacted with """
-        return [result[0] for result in self._session.query(Interaction.username).distinct().all()]
+        if cut_date is None:
+            results = self._session.query(Interaction.username).distinct().all()
+        else:
+            cut_off_time = datetime(cut_date[2], cut_date[1], cut_date[0])
+            results = self._session.query(Interaction.username).filter(
+                Interaction.first_interaction > cut_off_time).distinct().all()
+
+        return [result[0] for result in results]
 
     def insert_unfollow_count(self, user_id=None, username=None):
         """ track unfollow count for new futures """
