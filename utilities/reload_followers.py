@@ -3,6 +3,9 @@
 import os
 import sys
 import instaloader
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path + "/../")
 from instabot_py.persistence.sql import Persistence, Follower
 
 here = os.path.abspath(os.path.dirname(__file__))

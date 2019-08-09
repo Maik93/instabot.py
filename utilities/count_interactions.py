@@ -3,9 +3,12 @@
 import os
 import sys
 import instaloader
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path + "/../")
 from instabot_py.persistence.sql import Persistence
 
-CUT_DATE = [28, 6, 2019]
+CUT_DATE = [8, 8, 2019]
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -17,27 +20,27 @@ USER = sys.argv[1]
 PROFILE = USER
 
 # load follower list from file
-current_followers = [line.rstrip('\n') for line in open(os.path.join(here, "followers.txt"), 'r')]
+# current_followers = [line.rstrip('\n') for line in open(os.path.join(here, "followers.txt"), 'r')]
 
-# loader = instaloader.Instaloader()
-#
-# # Login method 1: ask password in terminal
-# # loader.interactive_login(USER)
-#
-# # Login method 2: load session created with `instaloader -l <your_instagram_username>`
-# loader.load_session_from_file(USER, filename=os.path.join(here, f"{USER}.instaloader-session"))
-#
-# loaded_profile = instaloader.Profile.from_username(loader.context, PROFILE)
-#
-# print(f'Fetching followers of profile {loaded_profile.username}.')
-# followers = set(loaded_profile.get_followers())
-#
-# # print('Storing followers into file.')
-# # with open('followers.txt', 'w') as f:
-# #     for follower in followers:
-# #         print(follower.username, file=f)
-#
-# current_followers = [follower.username for follower in followers]
+loader = instaloader.Instaloader()
+
+# Login method 1: ask password in terminal
+# loader.interactive_login(USER)
+
+# Login method 2: load session created with `instaloader -l <your_instagram_username>`
+loader.load_session_from_file(USER, filename=os.path.join(here, f"{USER}.instaloader-session"))
+
+loaded_profile = instaloader.Profile.from_username(loader.context, PROFILE)
+
+print(f'Fetching followers of profile {loaded_profile.username}.')
+followers = set(loaded_profile.get_followers())
+
+print("Storing followers into 'followers.txt'.")
+with open('followers.txt', 'w') as f:
+    for follower in followers:
+        print(follower.username, file=f)
+
+current_followers = [follower.username for follower in followers]
 
 db = Persistence(f'sqlite:///{PROFILE}.db', None)
 

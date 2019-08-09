@@ -1,6 +1,10 @@
 # personal bots
 *_bot.py
 out_*.txt
+bots/*_bot.py
+bots/*.db
+bots/*.session
+bots/out_*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
