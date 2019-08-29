@@ -562,8 +562,8 @@ class InstaBot:
             try:
                 profile = instaloader.Profile.from_id(self.instaload.context, user_id)
                 username = profile.username
-            except instaloader.ConnectionException as e:
-                # logging.warning("ConnectionException on get_username_by_user_id, going in fallback mode (without instaloader)")
+            except (instaloader.ConnectionException, instaloader.ProfileNotExistsException):
+                # logging.warning("exception on get_username_by_user_id, going in fallback mode (without instaloader)")
 
                 url_info = self.api_user_detail % user_id
                 r = self.s.get(url_info, headers="")
@@ -1204,11 +1204,14 @@ class InstaBot:
                         self.persistence.insert_unfollow_count(user_id=current_id)
                         time.sleep(3)
                         return False
-                    all_data = json.loads(
-                        re.search(
-                            "window._sharedData = (.*?);</script>", r.text, re.DOTALL
-                        ).group(1)
-                    )["entry_data"]["ProfilePage"][0]
+                    try:
+                        all_data = json.loads(
+                            re.search(
+                                "window._sharedData = (.*?);</script>", r.text, re.DOTALL
+                            ).group(1)
+                        )["entry_data"]["ProfilePage"][0]
+                    except AttributeError:
+                        return False
 
                     user_info = all_data["graphql"]["user"]
                     i = 0
