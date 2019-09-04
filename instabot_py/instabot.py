@@ -23,6 +23,10 @@ from instabot_py.config import config
 from instabot_py.persistence.manager import PersistenceManager
 
 
+class BannedAccountException(Exception):
+    pass
+
+
 class InstaBot:
     """
     Instabot.py
@@ -686,8 +690,13 @@ class InstaBot:
 
                                     self.logger.debug(f"Checking if we're banned...")
                                     if "block" in like.text:
-                                        self.logger.info("Oh no! We're banned! I'll sleep 24 hours... see you tomorrow!")
-                                        time.sleep(config.get("ban_sleep_time"))
+                                        self.logger.info("Oh no! We're banned! Removing session file...")
+                                        file_path = os.getcwd() + f"/bots/{self.session_file}"
+                                        if os.path.exists(file_path):
+                                            os.remove(file_path)
+                                        else:
+                                            self.logger.warning("Cannot locate session file! I've searched " + file_path)
+                                        raise BannedAccountException
                                     else:
                                         self.logger.info("It's media fault, it seems to be unreachable... storing it.")
                                         self.persistence.insert_media(
@@ -804,44 +813,48 @@ class InstaBot:
 
     def mainloop(self):
         while self.prog_run and self.login_status:
-            now = datetime.datetime.now()
-            # distance between start time and now
-            dns = self.time_dist(
-                datetime.time(self.start_at_h, self.start_at_m), now.time()
-            )
-            # distance between end time and now
-            dne = self.time_dist(
-                datetime.time(self.end_at_h, self.end_at_m), now.time()
-            )
-            if (dns == 0 or dne < dns) and dne != 0:
-                # ------------------- Get media_id -------------------
-                if len(self.media_by_tag) == 0:
-                    self.get_media_id_by_tag(random.choice(self.tag_list))
-                    self.this_tag_like_count = 0
-                    self.max_tag_like_count = random.randint(
-                        1, self.max_like_for_one_tag
-                    )
-                    self.remove_already_liked()
-                # ------------------- Like -------------------
-                self.new_auto_mod_like()
-                # ------------------- Unlike -------------------
-                self.new_auto_mod_unlike()
-                # ------------------- Follow -------------------
-                self.new_auto_mod_follow()
-                # ------------------- Unfollow -------------------
-                self.new_auto_mod_unfollow()
-                # ------------------- Comment -------------------
-                self.new_auto_mod_comments()
-                # Bot iteration in 1 sec
-                time.sleep(1)
-                # self.logger.debug("Tic!")
-            else:
-                self.logger.debug(
-                    "Sleeping until {hour}:{min}".format(
-                        hour=self.start_at_h, min=self.start_at_m
-                    )
+            try:
+                now = datetime.datetime.now()
+                # distance between start time and now
+                dns = self.time_dist(
+                    datetime.time(self.start_at_h, self.start_at_m), now.time()
                 )
-                time.sleep(100)
+                # distance between end time and now
+                dne = self.time_dist(
+                    datetime.time(self.end_at_h, self.end_at_m), now.time()
+                )
+                if (dns == 0 or dne < dns) and dne != 0:
+                    # ------------------- Get media_id -------------------
+                    if len(self.media_by_tag) == 0:
+                        self.get_media_id_by_tag(random.choice(self.tag_list))
+                        self.this_tag_like_count = 0
+                        self.max_tag_like_count = random.randint(
+                            1, self.max_like_for_one_tag
+                        )
+                        self.remove_already_liked()
+                    # ------------------- Like -------------------
+                    self.new_auto_mod_like()
+                    # ------------------- Unlike -------------------
+                    self.new_auto_mod_unlike()
+                    # ------------------- Follow -------------------
+                    self.new_auto_mod_follow()
+                    # ------------------- Unfollow -------------------
+                    self.new_auto_mod_unfollow()
+                    # ------------------- Comment -------------------
+                    self.new_auto_mod_comments()
+                    # Bot iteration in 1 sec
+                    time.sleep(1)
+                    # self.logger.debug("Tic!")
+                else:
+                    self.logger.debug(
+                        "Sleeping until {hour}:{min}".format(
+                            hour=self.start_at_h, min=self.start_at_m
+                        )
+                    )
+                    time.sleep(100)
+            except BannedAccountException:
+                self.__init__()
+                continue
         self.logger.info("Exit Program... GoodBye")
         sys.exit(0)
 
